@@ -1,0 +1,2 @@
+program = 1 jam 48 menit
+learn = 26 menit

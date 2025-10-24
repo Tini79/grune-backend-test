@@ -1,8 +1,8 @@
-import {Button} from 'primereact/button';
-import {Chart} from 'primereact/chart';
-import {Menu} from 'primereact/menu';
-import React, {useContext, useEffect, useRef, useState} from 'react';
-import {LayoutContext} from '@/Layouts/layout/context/layoutcontext';
+import { Button } from 'primereact/button';
+import { Chart } from 'primereact/chart';
+import { Menu } from 'primereact/menu';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { LayoutContext } from '@/Layouts/layout/context/layoutcontext';
 import Layout from "@/Layouts/layout/layout.jsx";
 import DashboardInfoCard from "@/Components/DashboardInfoCard.jsx";
 
@@ -33,7 +33,7 @@ const Dashboard = () => {
     const menu1 = useRef(null);
     const menu2 = useRef(null);
     const [lineOptions, setLineOptions] = useState({});
-    const {layoutConfig} = useContext(LayoutContext);
+    const { layoutConfig } = useContext(LayoutContext);
 
     const applyLightTheme = () => {
         const lineOptions = {
@@ -111,36 +111,36 @@ const Dashboard = () => {
         <Layout>
             <div className="grid">
                 <DashboardInfoCard title="Orders"
-                                   value="152"
-                                   icon="map-marker"
-                                   iconColor="blue"
-                                   descriptionValue="24 new"
-                                   descriptionText="since last visit">
+                    value="152"
+                    icon="map-marker"
+                    iconColor="blue"
+                    descriptionValue="24 new"
+                    descriptionText="since last visit">
                 </DashboardInfoCard>
                 <DashboardInfoCard title="Revenue"
-                                   value="GHS 2.100"
-                                   icon="map-marker"
-                                   iconColor="orange"
-                                   descriptionValue="%52+"
-                                   descriptionText="since last week">
+                    value="GHS 2.100"
+                    icon="map-marker"
+                    iconColor="orange"
+                    descriptionValue="%52+"
+                    descriptionText="since last week">
                 </DashboardInfoCard>
                 <DashboardInfoCard title="Customers" value="28441"
-                                   descriptionValue="520"
-                                   icon="inbox"
-                                   iconColor="cyan"
-                                   descriptionText="since last week">
+                    descriptionValue="520"
+                    icon="inbox"
+                    iconColor="cyan"
+                    descriptionText="since last week">
                 </DashboardInfoCard>
                 <DashboardInfoCard title="Comments" value="152 Unread"
-                                   descriptionValue="85"
-                                   icon="comment"
-                                   iconColor="purple"
-                                   descriptionText="responded">
+                    descriptionValue="85"
+                    icon="comment"
+                    iconColor="purple"
+                    descriptionText="responded">
                 </DashboardInfoCard>
 
                 <div className="col-12 xl:col-6">
                     <div className="card">
                         <h5>Sales Overview</h5>
-                        <Chart type="line" data={lineData} options={lineOptions}/>
+                        <Chart type="line" data={lineData} options={lineOptions} />
                     </div>
                 </div>
 
@@ -150,13 +150,13 @@ const Dashboard = () => {
                             <h5>Best Selling Products</h5>
                             <div>
                                 <Button type="button" icon="pi pi-ellipsis-v" rounded text className="p-button-plain"
-                                        onClick={(event) => menu1.current?.toggle(event)}/>
+                                    onClick={(event) => menu1.current?.toggle(event)} />
                                 <Menu
                                     ref={menu1}
                                     popup
                                     model={[
-                                        {label: 'Add New', icon: 'pi pi-fw pi-plus'},
-                                        {label: 'Remove', icon: 'pi pi-fw pi-minus'}
+                                        { label: 'Add New', icon: 'pi pi-fw pi-plus' },
+                                        { label: 'Remove', icon: 'pi pi-fw pi-minus' }
                                     ]}
                                 />
                             </div>
@@ -169,8 +169,8 @@ const Dashboard = () => {
                                 </div>
                                 <div className="mt-2 md:mt-0 flex align-items-center">
                                     <div className="surface-300 border-round overflow-hidden w-10rem lg:w-6rem"
-                                         style={{height: '8px'}}>
-                                        <div className="bg-orange-500 h-full" style={{width: '50%'}}/>
+                                        style={{ height: '8px' }}>
+                                        <div className="bg-orange-500 h-full" style={{ width: '50%' }} />
                                     </div>
                                     <span className="text-orange-500 ml-3 font-medium">%50</span>
                                 </div>
@@ -182,8 +182,8 @@ const Dashboard = () => {
                                 </div>
                                 <div className="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center">
                                     <div className="surface-300 border-round overflow-hidden w-10rem lg:w-6rem"
-                                         style={{height: '8px'}}>
-                                        <div className="bg-cyan-500 h-full" style={{width: '16%'}}/>
+                                        style={{ height: '8px' }}>
+                                        <div className="bg-cyan-500 h-full" style={{ width: '16%' }} />
                                     </div>
                                     <span className="text-cyan-500 ml-3 font-medium">%16</span>
                                 </div>
@@ -195,8 +195,8 @@ const Dashboard = () => {
                                 </div>
                                 <div className="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center">
                                     <div className="surface-300 border-round overflow-hidden w-10rem lg:w-6rem"
-                                         style={{height: '8px'}}>
-                                        <div className="bg-pink-500 h-full" style={{width: '67%'}}/>
+                                        style={{ height: '8px' }}>
+                                        <div className="bg-pink-500 h-full" style={{ width: '67%' }} />
                                     </div>
                                     <span className="text-pink-500 ml-3 font-medium">%67</span>
                                 </div>
@@ -208,8 +208,8 @@ const Dashboard = () => {
                                 </div>
                                 <div className="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center">
                                     <div className="surface-300 border-round overflow-hidden w-10rem lg:w-6rem"
-                                         style={{height: '8px'}}>
-                                        <div className="bg-green-500 h-full" style={{width: '35%'}}/>
+                                        style={{ height: '8px' }}>
+                                        <div className="bg-green-500 h-full" style={{ width: '35%' }} />
                                     </div>
                                     <span className="text-green-500 ml-3 font-medium">%35</span>
                                 </div>
