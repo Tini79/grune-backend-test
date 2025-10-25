@@ -7,6 +7,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { FileUpload } from 'primereact/fileupload';
 import { Calendar } from 'primereact/calendar';
 import { useRef } from 'react';
+import { useState } from 'react';
 
 export default function CreateCompany({ className = '' }) {
     const { prefectures } = usePage().props;
@@ -14,6 +15,8 @@ export default function CreateCompany({ className = '' }) {
     const endDate = useRef("");
     const startHour = useRef("");
     const endHour = useRef("");
+    const prefectureName = useRef("");
+    const phone = useRef("");
     const { data, setData, post, errors, processing, recentlySuccessful } = useForm({
         name: "",
         email: "",
@@ -42,9 +45,6 @@ export default function CreateCompany({ className = '' }) {
         updateBusinessHour("", time)
     }
 
-    console.log(prefectures, 'po');
-
-
     const changeEndHour = (dateTime) => {
         const date = new Date(dateTime);
         const hour = date.getHours();
@@ -64,8 +64,18 @@ export default function CreateCompany({ className = '' }) {
         }
     }
 
+    const onSelectPrefect = (e) => {
+        prefectureName.current = e.value;
+        setData('prefecture_id', e.target.value.id);
+    }
+
     const onFileSelect = (e) => {
         setData('image', e.files[0]);
+    }
+
+    const onChangePhone = (e) => {
+        phone.current = e.target.value;
+        setData('phone', parseInt(e.target.value));
     }
 
     const submit = (e) => {
@@ -112,7 +122,6 @@ export default function CreateCompany({ className = '' }) {
                 <div className="flex gap-3 mb-3">
                     <div className="w-full">
                         <label htmlFor="prefecture" className="block text-900 font-medium mb-2">Prefecture</label>
-                        {/* TODO: select */}
                         <Dropdown
                             id="prefecture"
                             type="text"
@@ -120,8 +129,8 @@ export default function CreateCompany({ className = '' }) {
                             options={prefectures}
                             className="w-full"
                             optionLabel="name"
-                            value={data.prefecture_id}
-                            onChange={(e) => setData('prefecture_id', e.target.value.id)}
+                            value={prefectureName.current}
+                            onChange={(e) => onSelectPrefect(e)}
                         />
                         <InputError message={errors.prefecture_id} className="" />
                     </div>
@@ -132,8 +141,8 @@ export default function CreateCompany({ className = '' }) {
                             type="text"
                             placeholder="Phone"
                             className="w-full"
-                            value={data.phone}
-                            onChange={(e) => setData('phone', e.target.value)}
+                            value={phone.current}
+                            onChange={(e) => onChangePhone(e)}
                         />
                         <InputError message={errors.phone} className="" />
                     </div>

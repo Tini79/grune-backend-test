@@ -1,0 +1,3 @@
+1. hour set current time pas pertama buka
+2. hash path gambar disimpan di db
+3. cek lagi apa" yg perlu di develop

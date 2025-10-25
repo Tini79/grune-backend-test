@@ -25,7 +25,7 @@ class CompanyStoreRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:50'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255'],
             'postcode' => ['required', 'string', 'size:7'],
             'prefecture_id' => ['required', 'integer'],
             'city' => ['required', 'string', 'max:255'],
@@ -34,7 +34,7 @@ class CompanyStoreRequest extends FormRequest
             'business_hour' => ['string', 'max:255'],
             'regular_holiday' => ['string', 'max:255'],
             'phone' => ['integer'],
-            'fax' => ['required', 'string', 'max:50'],
+            'fax' => ['required', 'string', 'max:50'], // but on db the maxlength is 15?
             'url' => ['required', 'string', 'max:255'],
             'license_number' => ['required', 'string', 'max:50'],
             'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
