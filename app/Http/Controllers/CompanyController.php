@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CompanyStoreRequest;
@@ -17,7 +16,7 @@ class CompanyController extends Controller
     public function index()
     {
         return Inertia::render('Company/Index', [
-            'companies' => Company::latest()->get()
+            'companies' => Company::latest()->get(),
         ]);
     }
 
@@ -27,7 +26,7 @@ class CompanyController extends Controller
     public function create()
     {
         return Inertia::render('Company/Create', [
-            'prefectures' => Prefecture::orderBy('name', 'desc')->get()->toArray()
+            'prefectures' => Prefecture::orderBy('name', 'desc')->get()->toArray(),
         ]);
     }
 
@@ -40,10 +39,10 @@ class CompanyController extends Controller
         $validated = $request->validated();
 
         if ($request->hasFile('image')) {
-            $file = $request->file('image');
+            $file     = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            $path = $file->storeAs('public/images', $filename);
+            $path = $file->storeAs('public/images/companies', $filename);
 
             $validated['image'] = $path;
         }
@@ -65,7 +64,7 @@ class CompanyController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        return Inertia::render('Company/Create');
     }
 
     /**
@@ -81,6 +80,7 @@ class CompanyController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $company = new Company();
+        $company->deleteCompanyById($id);
     }
 }

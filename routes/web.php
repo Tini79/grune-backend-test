@@ -35,6 +35,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [CompanyController::class, 'index'])->name('index');
         Route::get('/create', [CompanyController::class, 'create'])->name('create');
         Route::post('/store', [CompanyController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [CompanyController::class, 'edit'])->name('edit');
+        Route::delete('/delete/{id}', [CompanyController::class, 'destroy'])->name('delete');
     });
 });
 
