@@ -20,8 +20,9 @@ class CompanyController extends Controller
             ->latest()
             ->get()
             ->map(function ($company) {
-                if ($company->image) {
-                    $company->image = asset('storage/' . $company->image);
+                $image = data_get($company, 'image');
+                if ($image) {
+                    $company->image = asset('storage/' . $image);
                 }
 
                 return $company;
@@ -86,7 +87,20 @@ class CompanyController extends Controller
      */
     public function edit(string $id)
     {
-        return Inertia::render('Company/Create');
+        // dd($id);
+        $company = Company::with('prefecture')
+            ->where('id', $id)
+            ->get();
+
+        // TODO: bikinin model?
+        $image = data_get($company, 'image');
+        if ($image) {
+            $company->image = asset('storage/' . $image);
+        }
+
+        return Inertia::render('Company/Create', [
+            'company' => $company,
+        ]);
     }
 
     /**

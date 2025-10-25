@@ -84,7 +84,7 @@ const actionTemplate = (rowData) => {
         </p>
       </Dialog>
       <div className="flex gap-1">
-        <Button icon="pi pi-pencil" link onClick={() => router.visit(route('company.edit', rowData.id))} />
+        <Button icon="pi pi-pencil" link onClick={() => router.visit(route(`company.edit`, { id: rowData.id }))} />
         <Button icon="pi pi-trash" text severity="danger" onClick={() => handleDelete(rowData.id)} />
       </div>
     </>
