@@ -1,16 +1,18 @@
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
-import { Link, useForm, usePage } from '@inertiajs/react';
+import { router, useForm, usePage } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from 'primereact/dropdown';
 import { FileUpload } from 'primereact/fileupload';
 import { Calendar } from 'primereact/calendar';
 import { useRef } from 'react';
-import { useState } from 'react';
+import { useGlobalContext } from '@/Layouts/layout/context/layoutcontext';
+import { useEffect } from 'react';
 
-export default function CreateCompany({ className = '' }) {
-    const { prefectures } = usePage().props;
+export default function CreateCompanyForm({ className = '' }) {
+    const { toast } = useGlobalContext();
+    const { prefectures, flash } = usePage().props;
     const startDate = useRef("");
     const endDate = useRef("");
     const startHour = useRef("");
@@ -33,6 +35,17 @@ export default function CreateCompany({ className = '' }) {
         url: "",
         license_number: "",
     });
+
+    useEffect(() => {
+        if (flash?.message) {
+            toast.current.show({
+                severity: flash?.type ?? 'info',
+                summary: 'Notification',
+                detail: flash.message,
+                life: 4000,
+            });
+        }
+    }, [flash]);
 
     const changeStartHour = (dateTime) => {
         const date = new Date(dateTime);
@@ -80,7 +93,6 @@ export default function CreateCompany({ className = '' }) {
 
     const submit = (e) => {
         e.preventDefault();
-        console.log(data, 'jj');
 
         post(route('company.store'));
     };

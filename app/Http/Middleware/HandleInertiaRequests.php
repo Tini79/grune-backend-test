@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
@@ -18,7 +17,7 @@ class HandleInertiaRequests extends Middleware
     /**
      * Determine the current asset version.
      */
-    public function version(Request $request): string|null
+    public function version(Request $request): string | null
     {
         return parent::version($request);
     }
@@ -31,13 +30,16 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         return [
-            ...parent::share($request),
-            'auth' => [
+             ...parent::share($request),
+            'auth'  => [
                 'user' => $request->user(),
             ],
-            'ziggy' => fn () => [
-                ...(new Ziggy)->toArray(),
+            'ziggy' => fn() => [
+                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
+            ],
+            'flash' => [
+                'message' => fn() => $request->session()->get('message'),
             ],
         ];
     }

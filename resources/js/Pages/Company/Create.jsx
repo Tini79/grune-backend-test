@@ -1,15 +1,15 @@
 import Layout from "@/Layouts/layout/layout.jsx";
 import { Head } from "@inertiajs/react";
-import CreateCompany from "./Partials/CreateCompanyForm";
+import CreateCompanyForm from "./Partials/CreateCompanyForm";
 
-const Company = () => {
+const CreateCompany = () => {
   return (
     <Layout>
       <Head title="Company" />
       <div className="grid">
         <div className="col-12">
           <div className="card">
-            <CreateCompany
+            <CreateCompanyForm
               className="max-w-xl"
             />
           </div>
@@ -19,4 +19,4 @@ const Company = () => {
   )
 }
 
-export default Company;
+export default CreateCompany;

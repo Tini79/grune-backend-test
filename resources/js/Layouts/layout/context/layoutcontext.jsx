@@ -1,8 +1,13 @@
+import { Toast } from 'primereact/toast';
 import React, { useState, createContext } from 'react';
+import { useContext } from 'react';
+import { useRef } from 'react';
 
 export const LayoutContext = createContext({});
 
 export const LayoutProvider = ({ children }) => {
+    const toast = useRef(null);
+
     const [layoutConfig, setLayoutConfig] = useState({
         ripple: false,
         inputStyle: 'outlined',
@@ -46,6 +51,7 @@ export const LayoutProvider = ({ children }) => {
     };
 
     const value = {
+        toast,
         layoutConfig,
         setLayoutConfig,
         layoutState,
@@ -54,5 +60,10 @@ export const LayoutProvider = ({ children }) => {
         showProfileSidebar
     };
 
-    return <LayoutContext.Provider value={value}>{children}</LayoutContext.Provider>;
+    return <LayoutContext.Provider value={value}>
+        <Toast ref={toast} />
+        {children}
+    </LayoutContext.Provider>;
 };
+
+export const useGlobalContext = ()=>useContext(LayoutContext);

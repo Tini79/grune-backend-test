@@ -1,12 +1,12 @@
 import Layout from "@/Layouts/layout/layout.jsx";
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { Link, router } from "@inertiajs/react";
+import { router } from "@inertiajs/react";
 import { Button } from 'primereact/button';
-import { classNames } from "primereact/utils";
 import { useState } from "react";
 import { Dialog } from "primereact/dialog";
 import { useRef } from "react";
+import { Image } from "primereact/image";
 
 const Company = ({ companies }) => {
   return (
@@ -24,11 +24,10 @@ const Company = ({ companies }) => {
         <DataTable value={companies} scrollable scrollHeight="400px" tableStyle={{ minWidth: '50rem' }}>
           <Column field="name" header="Name"></Column>
           {/* TODO:image tampilkan data imagenya */}
-          <Column field="prefecture" header="Image"></Column>
+          <Column field="image" header="Image" body={displayImageTemplate}></Column>
           <Column field="email" header="Email"></Column>
           <Column field="postcode" header="Postcode"></Column>
-          {/* TODO: query data perlu relasi dg table ini dan tampilkan prefecture_name */}
-          <Column field="prefecture_name" header="Prefecture"></Column>
+          <Column field="prefecture.name" header="Prefecture"></Column>
           <Column field="email" header="City"></Column>
           <Column field="postcode" header="Local"></Column>
           <Column field="street_address" header="Street Address"></Column>
@@ -46,41 +45,50 @@ const Company = ({ companies }) => {
   )
 }
 
-const actionTemplate
-  = (rowData) => {
-    const [visible, setVisible] = useState(false);
-    const companyID = useRef(0);
+const displayImageTemplate = (rowData) => {
+  return (
+    <Image src={rowData.image} width="100" alt={rowData.name} />
+  )
+}
 
-    const handleDelete = (companyId) => {
-      companyID.current = companyId
-      setVisible(true);
-    }
+const actionTemplate = (rowData) => {
+  const [visible, setVisible] = useState(false);
+  const companyID = useRef(0);
 
-    const deleteData = () => {
-      router.delete(route('company.delete', companyID.current));
-    }
-
-    // internal component
-    const footerContent = (
-      <div className="pt-2">
-        <Button label="Cancel" onClick={() => setVisible(false)} className="p-button-text" />
-        <Button label="Delete" severity="danger" onClick={deleteData} autoFocus />
-      </div>
-    );
-
-    return (
-      <>
-        <Dialog visible={visible} modal header="Confirmation" footer={footerContent} style={{ width: '28rem' }} contentStyle={{ borderRadiu: '0px' }} onHide={() => { if (!visible) return; setVisible(false); }}>
-          <p className="py-4">
-            Are you sure to delete this data?
-          </p>
-        </Dialog>
-        <div className="flex gap-1">
-          <Button icon="pi pi-pencil" link onClick={() => router.visit(route('company.edit', rowData.id))} />
-          <Button icon="pi pi-trash" text severity="danger" onClick={() => handleDelete(rowData.id)} />
-        </div>
-      </>
-    )
+  const handleDelete = (companyId) => {
+    companyID.current = companyId
+    setVisible(true);
   }
+
+  const deleteData = () => {
+    router.delete(route('company.delete', companyID.current), {
+      onFinish: () => {
+        setVisible(false)
+      }
+    });
+  }
+
+  // internal component
+  const footerContent = (
+    <div className="pt-2">
+      <Button label="Cancel" onClick={() => setVisible(false)} className="p-button-text" />
+      <Button label="Delete" severity="danger" onClick={deleteData} autoFocus />
+    </div>
+  );
+
+  return (
+    <>
+      <Dialog visible={visible} modal header="Confirmation" footer={footerContent} style={{ width: '28rem' }} contentStyle={{ borderRadiu: '0px' }} onHide={() => { if (!visible) return; setVisible(false); }}>
+        <p className="py-4">
+          Are you sure to delete this data?
+        </p>
+      </Dialog>
+      <div className="flex gap-1">
+        <Button icon="pi pi-pencil" link onClick={() => router.visit(route('company.edit', rowData.id))} />
+        <Button icon="pi pi-trash" text severity="danger" onClick={() => handleDelete(rowData.id)} />
+      </div>
+    </>
+  )
+}
 
 export default Company;
