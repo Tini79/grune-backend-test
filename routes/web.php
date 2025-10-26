@@ -36,6 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/create', [CompanyController::class, 'create'])->name('create');
         Route::post('/store', [CompanyController::class, 'store'])->name('store');
         Route::get('/edit/{id}', [CompanyController::class, 'edit'])->name('edit');
+        Route::put('/edit/{id}', [CompanyController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [CompanyController::class, 'destroy'])->name('delete');
     });
 

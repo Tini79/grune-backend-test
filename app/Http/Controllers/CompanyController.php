@@ -9,6 +9,7 @@ use App\Models\Prefecture;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class CompanyController extends Controller
@@ -174,7 +175,6 @@ class CompanyController extends Controller
             ->where('id', $id)
             ->get();
 
-        // TODO: bikinin model?
         $image = data_get($company, 'image');
         if ($image) {
             $company->image = asset('storage/' . $image);
@@ -182,15 +182,44 @@ class CompanyController extends Controller
 
         return Inertia::render('Company/Edit', [
             'company' => $company,
+            'prefectures' => Prefecture::orderBy('name', 'desc')->get(),
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(CompanyStoreRequest $request, string $id)
     {
-        //
+        try {
+            $company = Company::findOrFail($id);
+            $validated = $request->validated();
+            if ($request->hasFile('image')) {
+                $file               = $request->file('image');
+                $path               = Company::uploadImage($file);
+                $validated['image'] = $path;
+
+                if ($file) {
+                    // Pastikan Anda hanya menghapus file yang ada di disk 'public'
+                    Storage::disk('public')->delete($file);
+                }
+            }
+
+            $company->update($validated);
+            return redirect()
+                ->route('company.index')
+                ->with('flash', [
+                    'type'    => 'success',
+                    'message' => 'succeed saving data',
+                ]);
+        } catch (Exception $e) {
+            // TODO: semua toast belum mau tampil, fix segera
+            return back()
+                ->with('flash', [
+                    'type'    => 'warn',
+                    'message' => 'failed saving data: ' . $e->getMessage(),
+                ]);
+        }
     }
 
     /**

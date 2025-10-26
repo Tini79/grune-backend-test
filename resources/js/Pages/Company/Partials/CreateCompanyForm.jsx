@@ -39,6 +39,7 @@ export default function CreateCompanyForm({ className = '', company }) {
         fax: company && company.length > 0 ? company[0].fax : "",
         url: company && company.length > 0 ? company[0].url : "",
         license_number: company && company.length > 0 ? company[0].license_number : "",
+        _method: company && company.length > 0 ? 'PUT' : 'POST'
     });
 
     useEffect(() => {
@@ -101,7 +102,7 @@ export default function CreateCompanyForm({ className = '', company }) {
     }
 
     const onSelectPrefect = (e) => {
-        prefectureName.current = e.value;
+        prefectureName.current = e.target.value;
         setData('prefecture_id', e.target.value.id);
         resetLocation(true);
     }
@@ -140,9 +141,11 @@ export default function CreateCompanyForm({ className = '', company }) {
 
     const submit = (e) => {
         e.preventDefault();
-        console.log(data, ';kl');
-
-        post(route('company.store'));
+        if (company) {
+            post(route('company.update', { id: company[0].id }));
+        } else {
+            post(route('company.store'));
+        }
     };
 
     // uploading image
@@ -153,8 +156,6 @@ export default function CreateCompanyForm({ className = '', company }) {
 
         if (uploadedFile) {
             setData('image', uploadedFile);
-
-            console.log("Nama File yang Diunggah:", uploadedFile);
         }
     };
 
@@ -168,8 +169,6 @@ export default function CreateCompanyForm({ className = '', company }) {
             const respData = res.data.data;
             if (respData) {
                 const selectedPrefect = prefectures.find(p => p.display_name == respData.prefecture);
-                console.log(selectedPrefect, 'selectedPrefect');
-
                 setData({
                     ...data,
                     city: respData.city,
