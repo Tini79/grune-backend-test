@@ -3,14 +3,34 @@ import { classNames } from 'primereact/utils';
 import React, { useEffect, useContext } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { MenuContext } from './context/menucontext';
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 
 
 const AppMenuitem = (props) => {
+    // const { url } = usePage();
+    // const searchParams = '';
+    // const { activeMenu, setActiveMenu } = useContext(MenuContext);   
+    // const item = props.item;
+    // const key = props.parentKey ? props.parentKey + '-' + props.index : String(props.index);       
+    // const isActiveRoute = item.to && url.startsWith(item.to);
+    // const active = activeMenu === key || activeMenu.startsWith(key + '-');
+
+    // const onRouteChange = (currUrl) => {
+    //     console.log(currUrl);
+    //     console.log(item.to, 'ito');
+
+    //     if (item.to && item.to === currUrl) {
+    //         console.log('set act');
+
+    //         setActiveMenu(key);
+    //     }
+    // };
+
     const pathname = route(route().current());
     const searchParams = '';
     const { activeMenu, setActiveMenu } = useContext(MenuContext);
     const item = props.item;
+
     const key = props.parentKey ? props.parentKey + '-' + props.index : String(props.index);
     const isActiveRoute = item.to && pathname === item.to;
     const active = activeMenu === key || activeMenu.startsWith(key + '-');
@@ -21,9 +41,12 @@ const AppMenuitem = (props) => {
         }
     };
 
+
     useEffect(() => {
+        // onRouteChange(url);
         onRouteChange(pathname);
         // eslint-disable-next-line react-hooks/exhaustive-deps
+        // }, [url, searchParams]);
     }, [pathname, searchParams]);
 
     const itemClick = (event) => {

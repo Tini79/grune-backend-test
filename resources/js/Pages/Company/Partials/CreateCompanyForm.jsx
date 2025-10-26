@@ -9,8 +9,12 @@ import { Calendar } from 'primereact/calendar';
 import { useRef } from 'react';
 import { useGlobalContext } from '@/Layouts/layout/context/layoutcontext';
 import { useEffect } from 'react';
+import { useState } from 'react';
+import { Tooltip } from 'primereact/tooltip';
+import { Button } from 'primereact/button';
+import axios from 'axios';
 
-export default function CreateCompanyForm({ className = '' }) {
+export default function CreateCompanyForm({ className = '', company }) {
     const { toast } = useGlobalContext();
     const { prefectures, flash } = usePage().props;
     const startDate = useRef("");
@@ -19,34 +23,61 @@ export default function CreateCompanyForm({ className = '' }) {
     const endHour = useRef("");
     const prefectureName = useRef("");
     const phone = useRef("");
-    const { data, setData, post, errors, processing, recentlySuccessful } = useForm({
-        name: "",
-        email: "",
-        prefecture_id: "",
-        phone: "",
-        postcode: "",
-        city: "",
-        local: "",
-        street_address: "",
-        business_hour: "",
-        regular_holiday: "",
-        image: null,
-        fax: "",
-        url: "",
-        license_number: "",
+    const fileUploadRef = useRef(null);
+    const { data, setData, post, errors, reset, processing, recentlySuccessful } = useForm({
+        name: company && company.length > 0 ? company[0].name : "",
+        email: company && company.length > 0 ? company[0].email : "",
+        prefecture_id: company && company.length > 0 ? company[0].prefecture_id : "",
+        phone: company && company.length > 0 ? company[0].phone : "",
+        postcode: company && company.length > 0 ? company[0].postcode : "",
+        city: company && company.length > 0 ? company[0].city : "",
+        local: company && company.length > 0 ? company[0].local : "",
+        street_address: company && company.length > 0 ? company[0].street_address : "",
+        business_hour: company && company.length > 0 ? company[0].business_hour : "",
+        regular_holiday: company && company.length > 0 ? company[0].regular_holiday : "",
+        image: company && company.length > 0 ? company[0].image : null,
+        fax: company && company.length > 0 ? company[0].fax : "",
+        url: company && company.length > 0 ? company[0].url : "",
+        license_number: company && company.length > 0 ? company[0].license_number : "",
     });
+
+    useEffect(() => {
+        if (company && company.length > 0) {
+            const initialSDate = new Date();
+            const initialEDate = new Date();
+            const businessHour = company[0].business_hour.split(' – ');
+
+            const initialSHour = businessHour[0].split(':')[0];
+            const initialSMinute = businessHour[0].split(':')[1];
+            const initialEHour = businessHour[1].split(':')[0];
+            const initialEMinute = businessHour[1].split(':')[1];
+
+            initialSDate.setHours(initialSHour, initialSMinute, 0, 0);
+            initialEDate.setHours(initialEHour, initialEMinute, 0, 0);
+
+            phone.current = company[0].phone;
+            startDate.current = initialSDate;
+            endDate.current = initialEDate;
+        } else {
+            const initialDate = new Date();
+
+            startDate.current = initialDate;
+            endDate.current = initialDate;
+        }
+    }, [])
 
     useEffect(() => {
         if (flash?.message) {
             toast.current.show({
                 severity: flash?.type ?? 'info',
-                summary: 'Notification',
+                summary: flash?.type == 'success' ? 'Notification' : 'Error',
                 detail: flash.message,
                 life: 4000,
             });
         }
     }, [flash]);
 
+    // changes handlers
     const changeStartHour = (dateTime) => {
         const date = new Date(dateTime);
         const hour = date.getHours();
@@ -69,6 +100,22 @@ export default function CreateCompanyForm({ className = '' }) {
         updateBusinessHour(time, "")
     }
 
+    const onSelectPrefect = (e) => {
+        prefectureName.current = e.value;
+        setData('prefecture_id', e.target.value.id);
+        // resetLocation(true);
+    }
+
+    const onChangePhone = (e) => {
+        phone.current = e.target.value;
+        setData('phone', parseInt(e.target.value));
+    }
+
+    // general functions
+    const searchPrefectByPostcode = async () => {
+        await fetchPostcodeData(data.postcode);
+    }
+
     const updateBusinessHour = (start, end) => {
         if (start) {
             setData('business_hour', `${start} – ${endHour.current}`)
@@ -77,24 +124,74 @@ export default function CreateCompanyForm({ className = '' }) {
         }
     }
 
-    const onSelectPrefect = (e) => {
-        prefectureName.current = e.value;
-        setData('prefecture_id', e.target.value.id);
-    }
+    // const resetLocation = (onChangePrefect = false) => {
+    //     console.log(data, 'reset');
+    //     reset('city', 'local');
+    //     if (!onChangePrefect) prefectureName.current = '';
+    // }
 
-    const onFileSelect = (e) => {
-        setData('image', e.files[0]);
-    }
-
-    const onChangePhone = (e) => {
-        phone.current = e.target.value;
-        setData('phone', parseInt(e.target.value));
+    const getError = (err) => {
+        toast.current.show({
+            severity: 'warn',
+            summary: 'Error',
+            detail: "Server Error. We couldn't complete your request due to a temporary issue on our system. Please try again in a moment.",
+            life: 4000,
+        });
     }
 
     const submit = (e) => {
         e.preventDefault();
+        console.log(data, ';kl');
 
         post(route('company.store'));
+    };
+
+    // uploading image
+    const onTemplateSelect = (e) => {
+        console.log(e, 'onTemplateSelect');
+
+        const uploadedFile = e.files[0];
+
+        if (uploadedFile) {
+            setData('image', uploadedFile);
+
+            console.log("Nama File yang Diunggah:", uploadedFile);
+        }
+    };
+
+    // API requests
+    const fetchPostcodeData = async (postcode) => {
+        try {
+            const params = {
+                postcode: postcode
+            };
+            const { data } = await axios.get(route('postcodes.data'), { params: params });
+            if (data.data) {
+                const selectedPrefect = prefectures.find(p => p.display_name == data.data.prefecture);
+                setData({
+                    ...data,
+                    city: data.data.city,
+                    local: data.data.local
+                });
+                prefectureName.current = selectedPrefect;
+            } else {
+                // resetLocation();
+            }
+        } catch (err) {
+            getError(err);
+        }
+    }
+
+    const itemTemplate = (image, index) => {
+        return (
+            <div className="p-2">
+                <img
+                    src={image.objectURL}
+                    alt={image.name}
+                    className="w-full object-cover rounded-lg shadow"
+                />
+            </div>
+        );
     };
 
     return (
@@ -140,7 +237,7 @@ export default function CreateCompanyForm({ className = '' }) {
                             placeholder="Prefecture"
                             options={prefectures}
                             className="w-full"
-                            optionLabel="name"
+                            optionLabel="display_name"
                             value={prefectureName.current}
                             onChange={(e) => onSelectPrefect(e)}
                         />
@@ -163,14 +260,23 @@ export default function CreateCompanyForm({ className = '' }) {
                 <div className="flex gap-3 mb-3">
                     <div className="w-full">
                         <label htmlFor="postcode" className="block text-900 font-medium mb-2">Post Code</label>
-                        <InputText
-                            id="postcode"
-                            type="text"
-                            placeholder="Post code"
-                            className="w-full"
-                            value={data.postcode}
-                            onChange={(e) => setData('postcode', e.target.value)}
-                        />
+                        <div className="flex">
+                            <InputText
+                                id="postcode"
+                                type="text"
+                                placeholder="Post code"
+                                className="w-full"
+                                value={data.postcode}
+                                onChange={(e) => setData('postcode', e.target.value)}
+                                style={{ borderRadius: '0.375rem 0 0 0.375rem' }}
+                            />
+                            <Button
+                                icon="pi pi-search"
+                                type="button"
+                                onClick={searchPrefectByPostcode}
+                                style={{ borderRadius: '0 0.375rem 0.375rem 0' }}
+                            />
+                        </div>
                         <InputError message={errors.postcode} className="" />
                     </div>
                     <div className="w-full">
@@ -261,14 +367,23 @@ export default function CreateCompanyForm({ className = '' }) {
                             value={data.image}
                             onChange={(e) => setData('image', e.target.value)}
                         /> */}
-                        <FileUpload
-                            mode="basic"
-                            name="image"
-                            // url="/api/upload"
-                            accept="image/*"
-                            maxFileSize={1000000}
-                            onSelect={onFileSelect}
-                        />
+                        <div className="">
+                            <FileUpload
+                                ref={fileUploadRef}
+                                name="image"
+                                accept="image/*"
+                                maxFileSize={1000000}
+                                onSelect={onTemplateSelect}
+                                // onClear={onTemplateClear}
+                                // headerTemplate={headerTemplate}
+                                itemTemplate={itemTemplate}
+                                // emptyTemplate={emptyTemplate}
+                                chooseOptions={{ label: 'Choose Image', icon: 'pi pi-add' }}
+                                uploadOptions={{ style: { display: 'none' } }}
+                                cancelOptions={{ style: { display: 'none' } }}
+                                customUpload
+                            />
+                        </div>
                         <InputError message={errors.image} className="" />
                     </div>
                     <div className="w-full">

@@ -38,6 +38,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/edit/{id}', [CompanyController::class, 'edit'])->name('edit');
         Route::delete('/delete/{id}', [CompanyController::class, 'destroy'])->name('delete');
     });
+
+    Route::get('api/postcodes/data', [CompanyController::class, 'getFilteredPostcodes'])->name('postcodes.data');
+    Route::get('/api/search/companies', [CompanyController::class, 'searchCompany'])->name('company.search');
 });
 
 Route::middleware('auth')->group(function () {
