@@ -21,7 +21,7 @@ export default function CreateCompanyForm({ className = '', company }) {
     const endDate = useRef("");
     const startHour = useRef("");
     const endHour = useRef("");
-    const prefectureName = useRef("");
+    const prefectureName = useRef(null);
     const phone = useRef("");
     const fileUploadRef = useRef(null);
     const { data, setData, post, errors, reset, processing, recentlySuccessful } = useForm({
@@ -103,7 +103,7 @@ export default function CreateCompanyForm({ className = '', company }) {
     const onSelectPrefect = (e) => {
         prefectureName.current = e.value;
         setData('prefecture_id', e.target.value.id);
-        // resetLocation(true);
+        resetLocation(true);
     }
 
     const onChangePhone = (e) => {
@@ -124,11 +124,10 @@ export default function CreateCompanyForm({ className = '', company }) {
         }
     }
 
-    // const resetLocation = (onChangePrefect = false) => {
-    //     console.log(data, 'reset');
-    //     reset('city', 'local');
-    //     if (!onChangePrefect) prefectureName.current = '';
-    // }
+    const resetLocation = (onChangePrefect = false) => {
+        reset('city', 'local');
+        if (!onChangePrefect) prefectureName.current = '';
+    }
 
     const getError = (err) => {
         toast.current.show({
@@ -165,19 +164,26 @@ export default function CreateCompanyForm({ className = '', company }) {
             const params = {
                 postcode: postcode
             };
-            const { data } = await axios.get(route('postcodes.data'), { params: params });
-            if (data.data) {
-                const selectedPrefect = prefectures.find(p => p.display_name == data.data.prefecture);
+            const res = await axios.get(route('postcodes.data'), { params: params });
+            const respData = res.data.data;
+            if (respData) {
+                const selectedPrefect = prefectures.find(p => p.display_name == respData.prefecture);
+                console.log(selectedPrefect, 'selectedPrefect');
+
                 setData({
                     ...data,
-                    city: data.data.city,
-                    local: data.data.local
+                    city: respData.city,
+                    local: respData.local,
+                    prefecture_id: selectedPrefect.id
                 });
+
                 prefectureName.current = selectedPrefect;
             } else {
-                // resetLocation();
+                resetLocation();
             }
         } catch (err) {
+            console.log('Error: ', err);
+
             getError(err);
         }
     }

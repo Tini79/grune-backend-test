@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -46,7 +47,7 @@ class Company extends Model
     {
         $filename = time() . '_' . $file->getClientOriginalName();
         $hashed   = hash('sha256', $filename) . '.' . $file->getClientOriginalExtension();
-        $path     = $file->storeAs('images/companies', $hashed);
+        $path     = $file->storeAs('images/companies', $hashed, 'public');
 
         return $path;
     }
