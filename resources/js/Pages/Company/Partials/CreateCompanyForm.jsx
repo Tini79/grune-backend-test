@@ -59,6 +59,9 @@ export default function CreateCompanyForm({ className = '', company }) {
             phone.current = company[0].phone;
             startDate.current = initialSDate;
             endDate.current = initialEDate;
+
+            // set prefecture
+            prefectureName.current = prefectures.find(p => p.id == company[0].prefecture_id);
         } else {
             const initialDate = new Date();
 
@@ -104,7 +107,8 @@ export default function CreateCompanyForm({ className = '', company }) {
     const onSelectPrefect = (e) => {
         prefectureName.current = e.target.value;
         setData('prefecture_id', e.target.value.id);
-        resetLocation(true);
+        // TODO: kalo aktif, prefecture id
+        // resetLocation(true);
     }
 
     const onChangePhone = (e) => {
