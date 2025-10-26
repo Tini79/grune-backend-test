@@ -7,32 +7,12 @@ import { Link, usePage } from "@inertiajs/react";
 
 
 const AppMenuitem = (props) => {
-    // const { url } = usePage();
-    // const searchParams = '';
-    // const { activeMenu, setActiveMenu } = useContext(MenuContext);   
-    // const item = props.item;
-    // const key = props.parentKey ? props.parentKey + '-' + props.index : String(props.index);       
-    // const isActiveRoute = item.to && url.startsWith(item.to);
-    // const active = activeMenu === key || activeMenu.startsWith(key + '-');
-
-    // const onRouteChange = (currUrl) => {
-    //     console.log(currUrl);
-    //     console.log(item.to, 'ito');
-
-    //     if (item.to && item.to === currUrl) {
-    //         console.log('set act');
-
-    //         setActiveMenu(key);
-    //     }
-    // };
-
-    const pathname = route(route().current());
+    const currRouteName = route().current();
     const searchParams = '';
     const { activeMenu, setActiveMenu } = useContext(MenuContext);
     const item = props.item;
-
     const key = props.parentKey ? props.parentKey + '-' + props.index : String(props.index);
-    const isActiveRoute = item.to && pathname === item.to;
+    const isActiveRoute = item.to && currRouteName.startsWith(item.name || item.to);
     const active = activeMenu === key || activeMenu.startsWith(key + '-');
 
     const onRouteChange = (url) => {
@@ -43,11 +23,10 @@ const AppMenuitem = (props) => {
 
 
     useEffect(() => {
-        // onRouteChange(url);
-        onRouteChange(pathname);
+        onRouteChange(currRouteName);
         // eslint-disable-next-line react-hooks/exhaustive-deps
         // }, [url, searchParams]);
-    }, [pathname, searchParams]);
+    }, [currRouteName, searchParams]);
 
     const itemClick = (event) => {
         // avoid processing disabled items

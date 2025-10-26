@@ -86,8 +86,8 @@ const Company = ({ companies }) => {
           <Column field="email" header="Email"></Column>
           <Column field="postcode" header="Postcode"></Column>
           <Column field="prefecture.display_name" header="Prefecture"></Column>
-          <Column field="email" header="City"></Column>
-          <Column field="postcode" header="Local"></Column>
+          <Column field="city" header="City"></Column>
+          <Column field="local" header="Local"></Column>
           <Column field="street_address" header="Street Address"></Column>
           <Column field="business_hour" header="Business Hour"></Column>
           <Column field="regular_holiday" header="Regular Holiday"></Column>
@@ -99,7 +99,7 @@ const Company = ({ companies }) => {
           <Column field="action" header="Action" body={(rowData) => actionTemplate(rowData)} alignFrozen="right" frozen={true}></Column>
         </DataTable>
       </div>
-    </Layout >
+    </Layout>
   )
 }
 
@@ -142,7 +142,7 @@ const actionTemplate = (rowData) => {
         </p>
       </Dialog>
       <div className="flex gap-1">
-        <Button icon="pi pi-pencil" link onClick={() => router.visit(route(`company.edit`, rowData.id))} />
+        <Button icon="pi pi-pencil" link onClick={() => router.visit(route(`company.edit`, { id: rowData.id }))} />
         <Button icon="pi pi-trash" text severity="danger" onClick={() => handleDelete(rowData.id)} />
       </div>
     </>
