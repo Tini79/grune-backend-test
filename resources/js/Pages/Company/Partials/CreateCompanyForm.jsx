@@ -56,10 +56,12 @@ export default function CreateCompanyForm({ className = '', company }) {
             initialSDate.setHours(initialSHour, initialSMinute, 0, 0);
             initialEDate.setHours(initialEHour, initialEMinute, 0, 0);
 
-            phone.current = company[0].phone;
             startDate.current = initialSDate;
             endDate.current = initialEDate;
+            startHour.current = businessHour[0];
+            endHour.current = businessHour[1];
 
+            phone.current = company[0].phone;
             // set prefecture
             prefectureName.current = prefectures.find(p => p.id == company[0].prefecture_id);
         } else {
@@ -90,7 +92,7 @@ export default function CreateCompanyForm({ className = '', company }) {
 
         startDate.current = dateTime;
         startHour.current = time;
-        updateBusinessHour("", time)
+        updateBusinessHour(time, "")
     }
 
     const changeEndHour = (dateTime) => {
@@ -101,7 +103,7 @@ export default function CreateCompanyForm({ className = '', company }) {
 
         endDate.current = dateTime;
         endHour.current = time;
-        updateBusinessHour(time, "")
+        updateBusinessHour("", time)
     }
 
     const onSelectPrefect = (e) => {
@@ -154,8 +156,6 @@ export default function CreateCompanyForm({ className = '', company }) {
 
     // uploading image
     const onTemplateSelect = (e) => {
-        console.log(e, 'onTemplateSelect');
-
         const uploadedFile = e.files[0];
 
         if (uploadedFile) {
@@ -185,8 +185,6 @@ export default function CreateCompanyForm({ className = '', company }) {
                 resetLocation();
             }
         } catch (err) {
-            console.log('Error: ', err);
-
             getError(err);
         }
     }
@@ -208,7 +206,6 @@ export default function CreateCompanyForm({ className = '', company }) {
             <header>
                 <h2 className="text-lg font-medium">Company Information</h2>
             </header>
-
             <form onSubmit={submit} className="mt-4 space-y-6" encType="multipart/form-data">
                 <div className="flex gap-3 mb-3">
                     <div className="w-full">

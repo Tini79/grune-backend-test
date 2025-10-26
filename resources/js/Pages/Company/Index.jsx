@@ -79,7 +79,7 @@ const Company = ({ companies }) => {
           <Button link label="Add" icon="pi pi-plus" iconPos="right" onClick={() => router.visit(route('company.create'))} style={{ backgroundColor: 'var(--primary-color)' }} className="font-bold text-white" />
 
         </div>
-        <DataTable value={currCompanies} scrollable scrollHeight="400px" paginator rows={25} tableStyle={{ minWidth: '50rem' }}>
+        <DataTable value={currCompanies} scrollable scrollHeight="400px" paginator rows={5} tableStyle={{ minWidth: '50rem' }}>
           <Column field="name" header="Name"></Column>
           {/* TODO:image tampilkan data imagenya */}
           <Column field="image" header="Image" body={displayImageTemplate}></Column>
