@@ -1,4 +1,2 @@
-- show foto pas edit
-- toast kagak muncul
 - testing lagi
 - reset itu gak aman kalo diterapin pas onchange prefecture

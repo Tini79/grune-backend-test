@@ -5,6 +5,7 @@ import { Transition } from '@headlessui/react';
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from 'primereact/dropdown';
 import { FileUpload } from 'primereact/fileupload';
+import { Image } from 'primereact/image';
 import { Calendar } from 'primereact/calendar';
 import { useRef } from 'react';
 import { useGlobalContext } from '@/Layouts/layout/context/layoutcontext';
@@ -16,7 +17,7 @@ import axios from 'axios';
 
 export default function CreateCompanyForm({ className = '', company }) {
     const { toast } = useGlobalContext();
-    const { prefectures, flash } = usePage().props;
+    const { prefectures, flash, image_url } = usePage().props;
     const startDate = useRef("");
     const endDate = useRef("");
     const startHour = useRef("");
@@ -24,6 +25,7 @@ export default function CreateCompanyForm({ className = '', company }) {
     const prefectureName = useRef(null);
     const phone = useRef("");
     const fileUploadRef = useRef(null);
+    const [existingImageUrl, setExistingImageUrl] = useState(image_url ? `/storage/${image_url}` : null);
     const { data, setData, post, errors, reset, processing, recentlySuccessful } = useForm({
         name: company && company.length > 0 ? company[0].name : "",
         email: company && company.length > 0 ? company[0].email : "",
@@ -35,7 +37,7 @@ export default function CreateCompanyForm({ className = '', company }) {
         street_address: company && company.length > 0 ? company[0].street_address : "",
         business_hour: company && company.length > 0 ? company[0].business_hour : "",
         regular_holiday: company && company.length > 0 ? company[0].regular_holiday : "",
-        image: company && company.length > 0 ? company[0].image : null,
+        image: null,
         fax: company && company.length > 0 ? company[0].fax : "",
         url: company && company.length > 0 ? company[0].url : "",
         license_number: company && company.length > 0 ? company[0].license_number : "",
@@ -63,6 +65,7 @@ export default function CreateCompanyForm({ className = '', company }) {
 
             phone.current = company[0].phone;
             // set prefecture
+
             prefectureName.current = prefectures.find(p => p.id == company[0].prefecture_id);
         } else {
             const initialDate = new Date();
@@ -160,8 +163,13 @@ export default function CreateCompanyForm({ className = '', company }) {
 
         if (uploadedFile) {
             setData('image', uploadedFile);
+            setExistingImageUrl(uploadedFile.objectURL);
         }
     };
+
+    const onTemplateClear = (e) => {
+        if (!e) setExistingImageUrl(null);
+    }
 
     // API requests
     const fetchPostcodeData = async (postcode) => {
@@ -374,21 +382,39 @@ export default function CreateCompanyForm({ className = '', company }) {
                             onChange={(e) => setData('image', e.target.value)}
                         /> */}
                         <div className="">
-                            <FileUpload
+                            {/* {existingImageUrl && !data.image ? ( */}
+                            <div className="">
+                                <FileUpload
+                                    mode="basic"
+                                    ref={fileUploadRef}
+                                    name="image"
+                                    accept="image/*"
+                                    maxFileSize={1000000}
+                                    onSelect={onTemplateSelect}
+                                    onClear={onTemplateClear}
+                                    chooseLabel={existingImageUrl ? 'Change Image' : 'Choose'}
+                                    chooseOptions={{
+                                        icon: `${existingImageUrl ? 'pi pi-refresh' : 'pi pi-plus'}`,
+                                    }}
+                                />
+                                <div className="mt-2">
+                                    <Image src={existingImageUrl} width="100" className="w-full" />
+                                </div>
+                            </div>
+                            {/* <FileUpload
                                 ref={fileUploadRef}
                                 name="image"
                                 accept="image/*"
                                 maxFileSize={1000000}
                                 onSelect={onTemplateSelect}
-                                // onClear={onTemplateClear}
-                                // headerTemplate={headerTemplate}
                                 itemTemplate={itemTemplate}
-                                // emptyTemplate={emptyTemplate}
                                 chooseOptions={{ label: 'Choose Image', icon: 'pi pi-add' }}
                                 uploadOptions={{ style: { display: 'none' } }}
                                 cancelOptions={{ style: { display: 'none' } }}
                                 customUpload
-                            />
+                            /> */}
+                            {/* ) : (
+                            )} */}
                         </div>
                         <InputError message={errors.image} className="" />
                     </div>

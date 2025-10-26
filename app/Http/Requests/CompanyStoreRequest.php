@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Requests;
 
 use App\Models\User;
@@ -22,6 +23,8 @@ class CompanyStoreRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
         return [
             'name'            => ['required', 'string', 'max:50'],
             'email'           => ['required', 'string', 'lowercase', 'email', 'max:255'],
@@ -37,7 +40,7 @@ class CompanyStoreRequest extends FormRequest
             'fax'             => ['required', 'string', 'max:15'],
             'url'             => ['required', 'string', 'max:255'],
             'license_number'  => ['required', 'string', 'max:50'],
-            'image'           => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
+            'image'           => [ $isUpdate ? 'nullable' : 'required', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048' ],
         ];
     }
 }

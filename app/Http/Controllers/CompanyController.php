@@ -8,6 +8,7 @@ use App\Models\Postcode;
 use App\Models\Prefecture;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -183,6 +184,7 @@ class CompanyController extends Controller
         return Inertia::render('Company/Edit', [
             'company' => $company,
             'prefectures' => Prefecture::orderBy('name', 'desc')->get(),
+            'image_url' => $company[0]->image
         ]);
     }
 
@@ -191,21 +193,29 @@ class CompanyController extends Controller
      */
     public function update(CompanyStoreRequest $request, string $id)
     {
+        DB::beginTransaction();
+
         try {
             $company = Company::findOrFail($id);
+            $olgImg = $company->image;
+            $file = '';
             $validated = $request->validated();
+
+            if (!$request->hasFile('image')) {
+                unset($validated['image']);
+            }
             if ($request->hasFile('image')) {
                 $file               = $request->file('image');
                 $path               = Company::uploadImage($file);
                 $validated['image'] = $path;
-
-                if ($file) {
-                    // Pastikan Anda hanya menghapus file yang ada di disk 'public'
-                    Storage::disk('public')->delete($file);
-                }
             }
 
             $company->update($validated);
+            if ($file) {
+                Storage::disk('public')->delete($olgImg);
+            }
+
+            DB::commit();
             return redirect()
                 ->route('company.index')
                 ->with('flash', [
@@ -213,6 +223,7 @@ class CompanyController extends Controller
                     'message' => 'succeed saving data',
                 ]);
         } catch (Exception $e) {
+            DB::rollBack();
             // TODO: semua toast belum mau tampil, fix segera
             return back()
                 ->with('flash', [
@@ -227,25 +238,42 @@ class CompanyController extends Controller
      */
     public function destroy(string $id)
     {
-        $deleted = Company::deleteCompanyById($id);
+        DB::beginTransaction();
 
-        // TODO: test dan tampilkan pesan ke depan
-        if ($deleted) {
-            return back()->with(
-                'flash',
-                [
-                    'type'    => 'success',
-                    'message' => 'company deleted succefully',
-                ]
-            );
-        } else {
-            return back()->with(
-                'flash',
-                [
+        try {
+            $company = Company::find($id);
+
+            $deleted = Company::deleteCompanyById($id);
+            if ($company->image && Storage::disk('public')->exists($company->image)) {
+                Storage::disk('public')->delete($company->image);
+            }
+
+            DB::commit();
+            if ($deleted) {
+                return back()->with(
+                    'flash',
+                    [
+                        'type'    => 'success',
+                        'message' => 'succeed delete company',
+                    ]
+                );
+            } else {
+                return back()->with(
+                    'flash',
+                    [
+                        'type'    => 'warn',
+                        'message' => 'company not found',
+                    ]
+                );
+            }
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            return back()
+                ->with('flash', [
                     'type'    => 'warn',
-                    'message' => 'company not found',
-                ]
-            );
+                    'message' => 'failed saving data: ' . $e->getMessage(),
+                ]);
         }
     }
 }
