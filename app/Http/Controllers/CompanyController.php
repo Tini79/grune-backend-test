@@ -226,11 +226,11 @@ class CompanyController extends Controller
 
             if ($file) {
                 Storage::disk('public')->delete($olgImg);
-            }
 
-            $company->update([
-                'image' => $validated['image']
-            ]);
+                $company->update([
+                    'image' => $validated['image']
+                ]);
+            }
 
             DB::commit();
             return redirect()

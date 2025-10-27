@@ -1,2 +1,0 @@
-- testing lagi
-- reset itu gak aman kalo diterapin pas onchange prefecture
