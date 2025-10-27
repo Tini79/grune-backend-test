@@ -134,16 +134,24 @@ class CompanyController extends Controller
     // public function store(CompanyStoreRequest $request)
     public function store(CompanyStoreRequest $request)
     {
+        DB::beginTransaction();
+
         try {
             $validated = $request->validated();
+            $company = Company::create($validated);
 
+            $companyId = $company->id;
             if ($request->hasFile('image')) {
                 $file               = $request->file('image');
-                $path               = Company::uploadImage($file);
+                $path               = Company::uploadImage($file, $companyId);
                 $validated['image'] = $path;
             }
 
-            Company::create($validated);
+            $company->update([
+                'image' => $validated['image']
+            ]);
+
+            DB::commit();
             return redirect()
                 ->route('company.index')
                 ->with('flash', [
@@ -151,6 +159,8 @@ class CompanyController extends Controller
                     'message' => 'succeed saving data',
                 ]);
         } catch (Exception $e) {
+            DB::rollBack();
+
             return back()
                 ->with('flash', [
                     'type'    => 'warn',
@@ -204,16 +214,23 @@ class CompanyController extends Controller
             if (!$request->hasFile('image')) {
                 unset($validated['image']);
             }
+
+            $company->update($validated);
+            $companyId = $company->id;
+
             if ($request->hasFile('image')) {
                 $file               = $request->file('image');
-                $path               = Company::uploadImage($file);
+                $path               = Company::uploadImage($file, $companyId);
                 $validated['image'] = $path;
             }
 
-            $company->update($validated);
             if ($file) {
                 Storage::disk('public')->delete($olgImg);
             }
+
+            $company->update([
+                'image' => $validated['image']
+            ]);
 
             DB::commit();
             return redirect()

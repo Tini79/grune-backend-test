@@ -43,12 +43,12 @@ class Company extends Model
      * @param \Illuminate\Http\UploadedFile $file
      * @return string  The stored file path
      */
-    public static function uploadImage(UploadedFile $file): string
+    public static function uploadImage(UploadedFile $file, int $companyId): string
     {
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $hashed   = hash('sha256', $filename) . '.' . $file->getClientOriginalExtension();
-        $path     = $file->storeAs('images/companies', $hashed, 'public');
-
+        // $filename = time() . '_' . $file->getClientOriginalName();
+        // $hashed   = hash('sha256', $filename) . '.' . $file->getClientOriginalExtension();
+        $filename = 'Image' . '_' . $companyId . '.' . $file->getClientOriginalExtension();
+        $path     = $file->storeAs('images/companies', $filename, 'public');
         return $path;
     }
 

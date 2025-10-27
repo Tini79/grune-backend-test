@@ -151,9 +151,17 @@ export default function CreateCompanyForm({ className = '', company }) {
     const submit = (e) => {
         e.preventDefault();
         if (company) {
-            post(route('company.update', { id: company[0].id }));
+            post(route('company.update', { id: company[0].id }), {
+                onSuccess: () => {
+                    reset();
+                }
+            });
         } else {
-            post(route('company.store'));
+            post(route('company.store'), {
+                onSuccess: () => {
+                    reset();
+                }
+            });
         }
     };
 
@@ -226,7 +234,7 @@ export default function CreateCompanyForm({ className = '', company }) {
                             value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
                         />
-                        <InputError message={errors.email} className="" />
+                        <InputError message={errors.name} className="" />
                     </div>
                     <div className="w-full">
                         <label htmlFor="email" className="block text-900 font-medium mb-2">Email</label>

@@ -14,6 +14,7 @@ import { useGlobalContext } from "@/Layouts/layout/context/layoutcontext";
 
 const Company = ({ companies }) => {
   const { toast } = useGlobalContext();
+  const { url } = usePage();
   const { flash } = usePage().props;
   const [currCompanies, setCurrCompanies] = useState([])
   const { data, setData, post, reset, processing } = useForm({
@@ -30,12 +31,15 @@ const Company = ({ companies }) => {
 
   useEffect(() => {
     if (flash?.message) {
-      toast.current.show({
-        severity: flash?.type ?? 'info',
-        summary: flash?.type == 'success' ? 'Notification' : 'Error',
-        detail: flash.message,
-        life: 4000,
-      });
+
+      if (toast.current) {
+        toast.current.show({
+          severity: flash?.type ?? 'info',
+          summary: flash?.type == 'success' ? 'Notification' : 'Error',
+          detail: flash.message,
+          life: 4000,
+        });
+      }
     }
   }, [flash]);
 
